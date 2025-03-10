@@ -4,18 +4,27 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store";
 
 interface ProtectedRouteProps {
-  requiredRole?: ("admin" | "customer")[] | "admin" | "customer";
+  requiredRoles: ("admin" | "customer")[] | "admin" | "customer";
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRoles }) => {
   const { isAuthenticated, userRole } = useSelector(
     (state: RootState) => state.auth
   );
+
   if (!isAuthenticated) {
     return <Navigate to="/signin" replace />;
   }
 
-  if (requiredRole && userRole !== requiredRole) {
+  const requiredRolesArray = Array.isArray(requiredRoles)
+    ? requiredRoles
+    : [requiredRoles];
+
+  const hasRequiredRole = requiredRolesArray.includes(
+    userRole as "admin" | "customer"
+  );
+
+  if (!hasRequiredRole) {
     if (userRole === "admin") {
       return <Navigate to="/admin" replace />;
     } else {

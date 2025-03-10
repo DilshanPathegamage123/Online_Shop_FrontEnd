@@ -15,30 +15,22 @@ function App() {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
-          {/*for customer */}
-          <Route element={<ProtectedRoute requiredRole="customer" />}>
-            <Route
-              path="/home"
-              element={
-                <>
-                  <Home />
-                </>
-              }
-            />
+          {/* Home page - accessible to both customer and admin */}
+          <Route
+            element={<ProtectedRoute requiredRoles={["customer", "admin"]} />}
+          >
+            <Route path="/home" element={<Home />} />
           </Route>
 
-          {/*for admin only */}
-          <Route element={<ProtectedRoute requiredRole="admin" />}>
-            <Route
-              path="/admin"
-              element={
-                <>
-                  <Admin_Page />
-                </>
-              }
-            />
+          {/* Admin page - admin only */}
+          <Route element={<ProtectedRoute requiredRoles="admin" />}>
+            <Route path="/admin" element={<Admin_Page />} />
           </Route>
 
+          {/* Default route */}
+          <Route path="/" element={<Navigate to="/signin" replace />} />
+
+          {/* Catch-all route */}
           <Route path="*" element={<Navigate to="/signin" replace />} />
         </Routes>
       </BrowserRouter>

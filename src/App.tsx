@@ -24,7 +24,7 @@ function App() {
 
           {/* Admin page - admin only */}
           <Route element={<ProtectedRoute requiredRoles="admin" />}>
-            <Route path="/admin" element={<Admin_Page />} />
+          <Route path="/admin" element={<Admin_Page />} />
           </Route>
 
           {/* Default route */}

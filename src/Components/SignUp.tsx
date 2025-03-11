@@ -1,76 +1,7 @@
-// import React from "react";
-// import { Link, useNavigate } from "react-router-dom";
-
-// const SignUp = () => {
-//   const navigate = useNavigate();
-
-//   const handleSubmit = (e: React.FormEvent) => {
-//     e.preventDefault();
-//     //signup logic here
-
-//     // after successful registration
-//     navigate("/signin");
-//   };
-//   return (
-//     <div className="container d-flex justify-content-center align-items-center col-4 h-100">
-//       <div className="container bg-dark text-white p-5">
-//         <div className=" fs-1 mb-3">Register Here</div>
-
-//         <form onSubmit={handleSubmit}>
-//           <div className="mb-3">
-//             <label className="form-label fs-3">First Name</label>
-//             <input type="text" className="form-control" id="username" />
-//           </div>
-
-//           <div className="mb-3">
-//             <label className="form-label fs-3">Last Name</label>
-//             <input type="text" className="form-control" id="username" />
-//           </div>
-
-//           <div className="mb-3">
-//             <label className="form-label fs-3">User Name</label>
-//             <input type="text" className="form-control" id="username" />
-//           </div>
-//           <div className="mb-3">
-//             <label className="form-label fs-3">Email</label>
-//             <input type="text" className="form-control" id="username" />
-//           </div>
-//           <div className="mb-3">
-//             <label className="form-label  fs-3">Password</label>
-//             <input type="password" className="form-control" id="password" />
-//           </div>
-
-//           <div className="mb-3">
-//             <label className="form-label  fs-3">Confirm Password</label>
-//             <input type="password" className="form-control" id="password" />
-//           </div>
-//           <div>
-//             <button type="submit" className="btn btn-primary pt-6 pb-6 col-5">
-//               Register
-//             </button>
-//           </div>
-//         </form>
-//         <div>
-//           <div className="mt-4 mb-2">
-//             If you already have an accont, Click here to login...
-//           </div>
-
-//           <Link to="/signin" className="btn btn-secondary py-2 px-4">
-//             LogIn
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default SignUp;
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 
-// Define a type for API errors
 interface ApiError {
   response?: {
     data?: {

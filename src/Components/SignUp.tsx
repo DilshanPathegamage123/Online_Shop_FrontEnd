@@ -1,75 +1,26 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api";
-
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-    status?: number;
-  };
-  message?: string;
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../store';
+import { updateFormData, signUp, setError } from '../Slices/signupSlice';
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    user_name: "",
-    email: "",
-    password: "",
-    confirm_password: "",
-  });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const { formData, loading, error} = useSelector((state: RootState) => state.signUp);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [id]: value,
-    }));
+    dispatch(updateFormData({ [id]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-
-    // Basic validation
     if (formData.password !== formData.confirm_password) {
-      setError("Passwords do not match");
+      dispatch(setError('Passwords do not match'));
       return;
     }
-
-    setLoading(true);
-
-    try {
-      const registrationData = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        user_name: formData.user_name,
-        email: formData.email,
-        password: formData.password,
-        role: "customer",
-      };
-
-      await api.post("/auth/register", registrationData);
-
-      navigate("/signin");
-    } catch (err: unknown) {
-      const apiError = err as ApiError;
-
-      if (apiError.response?.data?.message) {
-        setError(apiError.response.data.message);
-      } else {
-        setError("Registration failed. Please try again.");
-      }
-      console.error("Registration error:", err);
-    } finally {
-      setLoading(false);
-    }
+    await dispatch(signUp(formData));
+    navigate('/signin');
   };
 
   return (

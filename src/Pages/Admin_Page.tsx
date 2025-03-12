@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import ProductAddForm from "../Components/ProductAddForm";
 import NavBar from "../Components/NavBar";
-import api from "../api";
+import { RootState, AppDispatch } from '../store';
+import { fetchProducts, deleteProduct } from '../Slices/productSlice';
 
 interface Product {
   _id: string;
@@ -13,30 +15,14 @@ interface Product {
 }
 
 const Admin_Page = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [showAddForm, setShowAddForm] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [productToEdit, setProductToEdit] = useState<Product | null>(null);
+  const { products, loading, error } = useSelector((state: RootState) => state.product);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await api.get("/products");
-      setProducts(response.data);
-    } catch (err) {
-      console.error("Failed to fetch products:", err);
-      setError("Failed to load products. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
   const handleOpenForm = () => {
     setShowAddForm(true);
@@ -44,8 +30,7 @@ const Admin_Page = () => {
 
   const handleCloseForm = () => {
     setShowAddForm(false);
-    // Refresh products list when form closes (in case a product was added)
-    fetchProducts();
+    dispatch(fetchProducts());
   };
 
   const handleEditProduct = (product: Product) => {
@@ -55,14 +40,7 @@ const Admin_Page = () => {
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await api.delete(`/products/${id}`);
-        // Remove the product from state without refetching
-        setProducts(products.filter((product) => product._id !== id));
-      } catch (err) {
-        console.error("Failed to delete product:", err);
-        alert("Failed to delete product. Please try again.");
-      }
+      await dispatch(deleteProduct(id));
     }
   };
 
@@ -149,7 +127,7 @@ const Admin_Page = () => {
         </div>
       )}
 
-      <ProductAddForm show={showAddForm} handleClose={handleCloseForm}  productToEdit={productToEdit} />
+      <ProductAddForm show={showAddForm} handleClose={handleCloseForm} productToEdit={productToEdit} />
     </div>
   );
 };

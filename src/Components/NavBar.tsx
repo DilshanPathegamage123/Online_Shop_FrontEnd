@@ -3,7 +3,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
-import { logout } from '../store';
+import { logout } from '../Slices/authSlice';
 
 const NavBar = () => {
   const { isAuthenticated, userRole } = useSelector((state: RootState) => state.auth);

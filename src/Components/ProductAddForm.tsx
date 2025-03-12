@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from "react";
 import api from "../api";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../store";
+import { createProduct, editProduct, setError } from "../Slices/productSlice";
 
-interface ApiError {
-  response?: {
-    data?: {
-      message?: string;
-    };
-  };
-  message?: string;
-}
 
 interface Product {
   _id: string;
@@ -30,14 +25,15 @@ const ProductAddForm = ({
   handleClose,
   productToEdit,
 }: ProductAddFormProps) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [qty, setQty] = useState<number>(0);
   const [price, setPrice] = useState<number>(0);
   const [qtyError, setQtyError] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+  const { loading, error } = useSelector((state: RootState) => state.product);
+
 
   // Update form when productToEdit changes
   useEffect(() => {
@@ -58,8 +54,9 @@ const ProductAddForm = ({
     setDescription("");
     setQty(0);
     setPrice(0);
-    setError("");
+    dispatch(setError(null));
     setQtyError(false);
+    setIsEditMode(false);
   };
 
   // Handlers remain the same
@@ -92,64 +89,45 @@ const ProductAddForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    dispatch(setError(null));
 
-    // Validation remains the same
     if (!name.trim()) {
-      setError("Product name is required");
+      dispatch(setError("Product name is required"));
       return;
     }
 
     if (!description.trim()) {
-      setError("Description is required");
+      dispatch(setError("Description is required"));
       return;
     }
 
     if (qty <= 0) {
-      setError("Quantity must be greater than 0");
+      dispatch(setError("Quantity must be greater than 0"));
       return;
     }
 
     if (price <= 0) {
-      setError("Price must be greater than 0");
+      dispatch(setError("Price must be greater than 0"));
       return;
     }
 
-    setLoading(true);
+    const productData = {
+      name,
+      description,
+      qty,
+      price,
+    };
 
-    try {
-      const productData = {
-        name,
-        description,
-        qty,
-        price,
-      };
-
-      if (isEditMode && productToEdit) {
-        // Update existing product
-        await api.put(`/products/${productToEdit._id}`, productData);
-      } else {
-        // Create new product
-        await api.post("/products", productData);
-      }
-      resetForm();
-      handleClose();
-    } catch (err: unknown) {
-      console.error(`Failed to ${isEditMode ? "update" : "add"} product:`, err);
-      const apiError = err as ApiError;
-      if (apiError.response?.data?.message) {
-        setError(apiError.response.data.message);
-      } else {
-        setError(
-          `Failed to ${
-            isEditMode ? "update" : "add"
-          } product. Please try again.`
-        );
-      }
-    } finally {
-      setLoading(false);
+    if (isEditMode && productToEdit) {
+      await dispatch(editProduct({ ...productData, _id: productToEdit._id, __v: productToEdit.__v ?? 0 }));
+    } else {
+      await dispatch(createProduct(productData));
     }
+
+    resetForm();
+    handleClose();
   };
+
 
   return (
     <div

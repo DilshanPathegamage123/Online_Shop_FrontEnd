@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../store';
+import { fetchProducts } from '../Slices/productSlice';
 import NavBar from "../Components/NavBar";
-import api from "../api";
 
 interface Product {
   _id: string;
@@ -12,28 +14,13 @@ interface Product {
 }
 
 const Home = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
+  const dispatch = useDispatch<AppDispatch>();
+  const { products, loading, error } = useSelector((state: RootState) => state.product);
+  
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await api.get("/products");
-      setProducts(response.data);
-    } catch (err) {
-      console.error("Failed to fetch products:", err);
-      setError("Failed to load products. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAddToCart = (product: Product) => {
     alert(`Added ${product.name} to cart!`);

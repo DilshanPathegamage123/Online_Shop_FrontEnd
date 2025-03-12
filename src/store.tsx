@@ -1,8 +1,8 @@
-import { configureStore, createReducer, createAction } from '@reduxjs/toolkit';
+import { configureStore, createReducer, createAction, createSlice } from '@reduxjs/toolkit';
 
 // Define action types
-export const login = createAction<{token: string, userRole: 'admin' | 'customer'}>('auth/login');
-export const logout = createAction('auth/logout');
+// export const login = createAction<{token: string, userRole: 'admin' | 'customer'}>('auth/login');
+// export const logout = createAction('auth/logout');
 
 // Define initial state
 const initialState = {
@@ -12,29 +12,56 @@ const initialState = {
 };
 
 // Create reducer
-const authReducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase(login, (state, action) => {
-      const { token, userRole } = action.payload;
+// const authReducer = createReducer(initialState, (builder) => {
+//   builder
+//     .addCase(login, (state, action) => {
+//       const { token, userRole } = action.payload;
+//       state.token = token;
+//       state.isAuthenticated = true;
+//       state.userRole = userRole;
+//       localStorage.setItem('token', token);
+//       localStorage.setItem('userRole', userRole);
+//     })
+//     .addCase(logout, (state) => {
+//       state.token = null;
+//       state.isAuthenticated = false;
+//       state.userRole = null;
+//       localStorage.removeItem('token');
+//       localStorage.removeItem('userRole');
+//     });
+// });
+
+// Auth slice
+const authSlice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    login: (state, action) => {
+      const { token, userRole} = action.payload;
       state.token = token;
-      state.isAuthenticated = true;
+      state.isAuthenticated= true;
       state.userRole = userRole;
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', token); 
       localStorage.setItem('userRole', userRole);
-    })
-    .addCase(logout, (state) => {
+       },
+    logout: (state) => {
       state.token = null;
       state.isAuthenticated = false;
       state.userRole = null;
       localStorage.removeItem('token');
       localStorage.removeItem('userRole');
-    });
+    }
+  }
 });
+
+//Export Actions
+export const { login, logout} = authSlice.actions;
 
 // Create store
 export const store = configureStore({
   reducer: {
-    auth: authReducer
+    // auth: authReducer
+    auth: authSlice.reducer
   }
 });
 

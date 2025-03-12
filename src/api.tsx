@@ -1,5 +1,6 @@
 import axios from "axios";
-import { store, logout } from "./store";
+import { store } from "./store";
+import { logout } from "./Slices/authSlice";
 
 // Create axios instance
 const api = axios.create({

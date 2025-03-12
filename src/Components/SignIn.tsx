@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login } from "../store";
+import { login } from "../Slices/authSlice";
 import api from "../api";
 
 interface ApiErrorData {
